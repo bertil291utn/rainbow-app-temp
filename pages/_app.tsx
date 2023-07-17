@@ -2,6 +2,8 @@ import '../styles/globals.css';
 import '@rainbow-me/rainbowkit/styles.css';
 import { getDefaultWallets, RainbowKitProvider } from '@rainbow-me/rainbowkit';
 import type { AppProps } from 'next/app';
+import { alchemyProvider } from 'wagmi/providers/alchemy';
+import { jsonRpcProvider } from 'wagmi/providers/jsonRpc';
 import { configureChains, createConfig, WagmiConfig } from 'wagmi';
 import {
   arbitrum,
@@ -15,19 +17,23 @@ import { publicProvider } from 'wagmi/providers/public';
 
 const { chains, publicClient, webSocketPublicClient } = configureChains(
   [
-    mainnet,
     polygon,
-    optimism,
-    arbitrum,
-    zora,
-    ...(process.env.NEXT_PUBLIC_ENABLE_TESTNETS === 'true' ? [goerli] : []),
   ],
-  [publicProvider()]
+  [alchemyProvider({
+    apiKey: 'isEFye1FytsrF7PSDPX-pU2DucBQbIsW',
+  }),
+  // jsonRpcProvider({
+  //   rpc: chain => ({
+  //     http: `https://polygon-mainnet.g.alchemy.com/v2/isEFye1FytsrF7PSDPX-pU2DucBQbIsW`,
+  //   }),
+  // }),
+
+  ]
 );
 
 const { connectors } = getDefaultWallets({
   appName: 'RainbowKit App',
-  projectId: 'YOUR_PROJECT_ID',
+  projectId: 'PROJECT001',
   chains,
 });
 

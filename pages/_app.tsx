@@ -4,49 +4,50 @@ import { getDefaultWallets, RainbowKitProvider } from '@rainbow-me/rainbowkit';
 import type { AppProps } from 'next/app';
 import { alchemyProvider } from 'wagmi/providers/alchemy';
 import { jsonRpcProvider } from 'wagmi/providers/jsonRpc';
-import { configureChains, createConfig, WagmiConfig } from 'wagmi';
+import { configureChains, createClient, WagmiConfig } from 'wagmi';
 import {
   arbitrum,
   goerli,
   mainnet,
   optimism,
   polygon,
-  zora,
+  polygonMumbai,
 } from 'wagmi/chains';
 import { publicProvider } from 'wagmi/providers/public';
 
-const { chains, publicClient, webSocketPublicClient } = configureChains(
+const { provider, webSocketProvider, chains } = configureChains(
+  [polygon, ...(process.env.IS_DEV === 'TRUE' ? [polygonMumbai] : [])],
   [
-    polygon,
-  ],
-  [alchemyProvider({
-    apiKey: 'isEFye1FytsrF7PSDPX-pU2DucBQbIsW',
-  }),
-  // jsonRpcProvider({
-  //   rpc: chain => ({
-  //     http: `https://polygon-mainnet.g.alchemy.com/v2/isEFye1FytsrF7PSDPX-pU2DucBQbIsW`,
-  //   }),
-  // }),
-
+    alchemyProvider({
+      // This is Alchemy's default API key.
+      // You can get your own at https://dashboard.alchemyapi.io
+      apiKey: 'isEFye1FytsrF7PSDPX-pU2DucBQbIsW',
+      priority: 0
+    }),
+    jsonRpcProvider({ rpc: (chain) => ({ http: chain.rpcUrls.default }) }),
+    publicProvider(),
   ]
 );
 
+
 const { connectors } = getDefaultWallets({
-  appName: 'RainbowKit App',
+  appName: 'Crowdmuse',
   projectId: '2223dee4891a6d8e8e98c5975cd5a4be',
   chains,
 });
 
-const wagmiConfig = createConfig({
+const wagmiClient = createClient({
   autoConnect: true,
   connectors,
-  publicClient,
-  webSocketPublicClient,
+  provider,
+  webSocketProvider,
 });
+
+
 
 function MyApp({ Component, pageProps }: AppProps) {
   return (
-    <WagmiConfig config={wagmiConfig}>
+    <WagmiConfig client={wagmiClient}>
       <RainbowKitProvider chains={chains}>
         <Component {...pageProps} />
       </RainbowKitProvider>

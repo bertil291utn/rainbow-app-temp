@@ -24,7 +24,7 @@ const { provider, webSocketProvider, chains } = configureChains(
       apiKey: 'isEFye1FytsrF7PSDPX-pU2DucBQbIsW',
       priority: 0
     }),
-    jsonRpcProvider({ rpc: (chain) => ({ http: chain.rpcUrls.default }) }),
+    // jsonRpcProvider({ rpc: (chain) => ({ http: chain.rpcUrls.default }) }),
     publicProvider(),
   ]
 );
